@@ -199,6 +199,8 @@ function wpspc_cart_actions_handler() {
 
         if ($count == 1) {
             //This is the first quantity of this item.
+	    // Minimum quantity permitted is 2, so we will add +1 to the $count
+	    $count++;
 
             $product = array('name' => $post_wspsc_product, 'price' => $price, 'price_orig' => $price, 'quantity' => $count, 'shipping' => $shipping, 'cartLink' => $post_cart_link, 'item_number' => $post_item_number);
             if (!empty($post_encoded_file_val)) {
