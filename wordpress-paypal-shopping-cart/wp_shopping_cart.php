@@ -280,6 +280,11 @@ function wpspc_cart_actions_handler() {
         if (isset($_SESSION['simple_cart_id']) && !empty($_SESSION['simple_cart_id'])) {
             wpspc_update_cart_items_record();
         }
+	    
+	// redirect to current page in order to avoid reload module pop-up with double add
+	header('Location: '.$_SERVER['REQUEST_URI']);
+	exit;
+	    
     } else if (isset($_POST['delcart'])) {
         $nonce = $_REQUEST['_wpnonce'];
         if (!wp_verify_nonce($nonce, 'wspsc_delcart')) {
@@ -301,6 +306,11 @@ function wpspc_cart_actions_handler() {
         if (count($_SESSION['simpleCart']) < 1) {
             reset_wp_cart();
         }
+	
+	// redirect to current page in order to avoid reload module pop-up with double add
+	header('Location: '.$_SERVER['REQUEST_URI']);
+	exit;
+	
     } else if (isset($_POST['wpspsc_coupon_code'])) {
         $nonce = $_REQUEST['_wpnonce'];
         if (!wp_verify_nonce($nonce, 'wspsc_coupon')) {
