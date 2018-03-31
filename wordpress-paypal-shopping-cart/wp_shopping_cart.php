@@ -251,6 +251,12 @@ function wpspc_cart_actions_handler() {
         if (!is_numeric($post_quantity)) {
             wp_die('Error! The quantity value must be numeric.');
         }
+	
+	// Minimum quantity permitted is 2 
+	if($post_quantity == 1) {
+	    $post_quantity = 2;
+	}	
+	    
         $products = $_SESSION['simpleCart'];
         foreach ($products as $key => $item) {
             if ((stripslashes($item['name']) == $post_wspsc_product) && $post_quantity) {
