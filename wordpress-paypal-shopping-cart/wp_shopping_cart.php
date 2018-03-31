@@ -241,6 +241,11 @@ function wpspc_cart_actions_handler() {
                 exit;
             }
         }
+	
+	// redirect to current page in order to avoid reload module pop-up with double add
+	header('Location: '.$_SERVER['REQUEST_URI']);
+	exit;
+	    
     } else if (isset($_POST['cquantity'])) {
         $nonce = $_REQUEST['_wpnonce'];
         if (!wp_verify_nonce($nonce, 'wspsc_cquantity')) {
