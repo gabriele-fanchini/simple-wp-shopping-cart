@@ -188,35 +188,22 @@ function print_wp_shopping_cart($args = array()) {
                 </td></tr>';
         }
 	    
-	// Add address/name/CF Management
-	$output .= '<tr class="wspsc_cart_coupon_row"><td colspan="4">
-                <div class="wpspsc_coupon_section">
-                <span class="wpspsc_coupon_label">' . (__("Enter Coupon Code", "wordpress-simple-paypal-shopping-cart")) . '</span>
-                <form  method="post" action="" >' . wp_nonce_field('wspsc_coupon', '_wpnonce', true, false) . '
-                <input type="text" name="wpspsc_coupon_code" value="" size="10" />
-                <span class="wpspsc_coupon_apply_button"><input type="submit" name="wpspsc_apply_coupon" class="wpspsc_apply_coupon" value="' . (__("Apply", "wordpress-simple-paypal-shopping-cart")) . '" /></span>
-                </form>
-                </div>
-                </td></tr>';
-	    
-	
+	// Add address/name/CF Management	
 	$output .= '<div class="costumer_infos">
-		    <form  method="post" action="" >' . wp_nonce_field('wspsc_coupon', '_wpnonce', true, false) . '
-                    <span class="costumer_name_label">'Nome:'</span>
+		    <form  method="post" action="" >' . wp_nonce_field('wspsc_infoes', '_wpnonce', true, false) . '
+                    Nome:
 		    <input type="text" name="input_name" value="" size="10" />
-		    <span class="costumer_name_label">'Cognome:'</span>
+		    Cognome:
 		    <input type="text" name="input_surname" value="" size="10" />
-		    <span class="costumer_name_label">'email:'</span>
+		    email:
 		    <input type="text" name="input_email" value="" size="10" />
-		    <span class="costumer_name_label">'CF:'</span>
+		    CF:
 		    <input type="text" name="input_CF" value="" size="10" />
-		    <span class="costumer_name_label">'Via:'</span>
+		    Via:
 		    <input type="text" name="input_Address" value="" size="10" />
-		    <span class="costumer_name_label">'Località:'</span>
+		    Località:
 		    <input type="text" name="input_City" value="" size="10" />
-		    <span class="costumer_name_label">'CAP:'</span>
-		    <input type="text" name="input_Cap" value="" size="10" />
-		    <span class="costumer_name_label">'CAP:'</span>
+		    CAP:
 		    <input type="text" name="input_Cap" value="" size="10" />
 		    <select id="provincia" name="provincia">
                                         <option value="null">Provincia</option>
@@ -264,7 +251,7 @@ function print_wp_shopping_cart($args = array()) {
                                         <option value="im">Imperia</option>
                                         <option value="is">Isernia</option>
                                         <option value="sp">La spezia</option>
-                                        <option value="aq">L'aquila</option>
+                                        <option value="aq">L aquila</option>
                                         <option value="lt">Latina</option>
                                         <option value="le">Lecce</option>
                                         <option value="lc">Lecco</option>
@@ -302,7 +289,7 @@ function print_wp_shopping_cart($args = array()) {
                                         <option value="rg">Ragusa</option>
                                         <option value="ra">Ravenna</option>
                                         <option value="rc">Reggio di Calabria</option>
-                                        <option value="re">Reggio nell'Emilia</option>
+                                        <option value="re">Reggio nell Emilia</option>
                                         <option value="ri">Rieti</option>
                                         <option value="rn">Rimini</option>
                                         <option value="rm">Roma</option>
@@ -332,8 +319,7 @@ function print_wp_shopping_cart($args = array()) {
                                         <option value="vt">Viterbo</option>
                     </select>
                     </form>
-		    </div>';
-	    
+		    </div>';	    
 	//END
 
         $paypal_checkout_url = WP_CART_LIVE_PAYPAL_URL;
