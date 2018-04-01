@@ -100,6 +100,17 @@ function print_wp_shopping_cart($args = array()) {
         if (!empty($cart_free_shipping_threshold) && $total > $cart_free_shipping_threshold) {
             $postage_cost = 0;
         }
+	    
+	// Setup shipping costs based on items quantity
+	if($total_items <= 4) {
+	  $postage_cost = 4;
+	} else if($total_items <= 6) {
+	  $postage_cost = 6.70;
+	} else if($total_items <= 9) {
+	  $postage_cost = 7.70;
+	} else if($total_items >= 10) {
+	  $postage_cost = 9;
+	}
 
         foreach ($_SESSION['simpleCart'] as $item) {
 
