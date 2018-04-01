@@ -192,20 +192,20 @@ function print_wp_shopping_cart($args = array()) {
 	$output .= '<div class="costumer_infos">
 		    <form  method="post" action="" >' . wp_nonce_field('wspsc_infoes', '_wpnonce', true, false) . '
                     Nome:
-		    <input type="text" name="input_name" value="" size="10" />
+		    <input type="text" name="input_name" value="" size="10" required="required"/>
 		    Cognome:
-		    <input type="text" name="input_surname" value="" size="10" />
+		    <input type="text" name="input_surname" value="" size="10" required="required"/>
 		    email:
-		    <input type="text" name="input_email" value="" size="10" />
+		    <input type="text" name="input_email" value="" size="10" required="required"/>
 		    CF:
-		    <input type="text" name="input_CF" value="" size="10" />
+		    <input type="text" name="input_CF" value="" size="10" pattern="^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]$" required="required"/>
 		    Via:
-		    <input type="text" name="input_Address" value="" size="10" />
+		    <input type="text" name="input_Address" value="" size="10" required="required"/>
 		    Località:
-		    <input type="text" name="input_City" value="" size="10" />
+		    <input type="text" name="input_City" value="" size="10" required="required"/>
 		    CAP:
-		    <input type="text" name="input_Cap" value="" size="10" />
-		    <select id="provincia" name="provincia">
+		    <input type="text" name="input_Cap" value="" size="10" required="required"/>
+		    <select id="provincia" name="provincia" required="required">
                                         <option value="null">Provincia</option>
                                         <option value="ag">Agrigento</option>
                                         <option value="al">Alessandria</option>
