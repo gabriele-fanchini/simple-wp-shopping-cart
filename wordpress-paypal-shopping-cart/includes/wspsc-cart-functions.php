@@ -188,139 +188,6 @@ function print_wp_shopping_cart($args = array()) {
                 </td></tr>';
         }
 	    
-	// Add address/name/CF Management	
-	$output .= '<div class="costumer_infos">
-		    <form  method="post" action="" >' . wp_nonce_field('wspsc_infoes', '_wpnonce', true, false) . '
-                    Nome:
-		    <input type="text" name="input_name" value="" size="10" required="required"/>
-		    Cognome:
-		    <input type="text" name="input_surname" value="" size="10" required="required"/>
-		    email:
-		    <input type="email" name="input_email" value="" size="10" required="required"/>
-		    CF:
-		    <input type="text" name="input_CF" value="" size="10" pattern="^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]$" required="required"/>
-		    Via:
-		    <input type="text" name="input_Address" value="" size="10" required="required"/>
-		    Località:
-		    <input type="text" name="input_City" value="" size="10" required="required"/>
-		    CAP:
-		    <input type="text" name="input_Cap" value="" size="10" required="required"/>
-		    <select id="provincia" name="provincia" required="required">
-                                        <option value="null">Provincia</option>
-                                        <option value="ag">Agrigento</option>
-                                        <option value="al">Alessandria</option>
-                                        <option value="an">Ancona</option>
-                                        <option value="ao">Aosta</option>
-                                        <option value="ar">Arezzo</option>
-                                        <option value="ap">Ascoli Piceno</option>
-                                        <option value="at">Asti</option>
-                                        <option value="av">Avellino</option>
-                                        <option value="ba">Bari</option>
-                                        <option value="bt">Barletta-Andria-Trani</option>
-                                        <option value="bl">Belluno</option>
-                                        <option value="bn">Benevento</option>
-                                        <option value="bg">Bergamo</option>
-                                        <option value="bi">Biella</option>
-                                        <option value="bo">Bologna</option>
-                                        <option value="bz">Bolzano</option>
-                                        <option value="bs">Brescia</option>
-                                        <option value="br">Brindisi</option>
-                                        <option value="ca">Cagliari</option>
-                                        <option value="cl">Caltanissetta</option>
-                                        <option value="cb">Campobasso</option>
-                                        <option value="ci">Carbonia-iglesias</option>
-                                        <option value="ce">Caserta</option>
-                                        <option value="ct">Catania</option>
-                                        <option value="cz">Catanzaro</option>
-                                        <option value="ch">Chieti</option>
-                                        <option value="co">Como</option>
-                                        <option value="cs">Cosenza</option>
-                                        <option value="cr">Cremona</option>
-                                        <option value="kr">Crotone</option>
-                                        <option value="cn">Cuneo</option>
-                                        <option value="en">Enna</option>
-                                        <option value="fm">Fermo</option>
-                                        <option value="fe">Ferrara</option>
-                                        <option value="fi">Firenze</option>
-                                        <option value="fg">Foggia</option>
-                                        <option value="fc">Forlì-Cesena</option>
-                                        <option value="fr">Frosinone</option>
-                                        <option value="ge">Genova</option>
-                                        <option value="go">Gorizia</option>
-                                        <option value="gr">Grosseto</option>
-                                        <option value="im">Imperia</option>
-                                        <option value="is">Isernia</option>
-                                        <option value="sp">La spezia</option>
-                                        <option value="aq">L aquila</option>
-                                        <option value="lt">Latina</option>
-                                        <option value="le">Lecce</option>
-                                        <option value="lc">Lecco</option>
-                                        <option value="li">Livorno</option>
-                                        <option value="lo">Lodi</option>
-                                        <option value="lu">Lucca</option>
-                                        <option value="mc">Macerata</option>
-                                        <option value="mn">Mantova</option>
-                                        <option value="ms">Massa-Carrara</option>
-                                        <option value="mt">Matera</option>
-                                        <option value="vs">Medio Campidano</option>
-                                        <option value="me">Messina</option>
-                                        <option value="mi">Milano</option>
-                                        <option value="mo">Modena</option>
-                                        <option value="mb">Monza e della Brianza</option>
-                                        <option value="na">Napoli</option>
-                                        <option value="no">Novara</option>
-                                        <option value="nu">Nuoro</option>
-                                        <option value="og">Ogliastra</option>
-                                        <option value="ot">Olbia-Tempio</option>
-                                        <option value="or">Oristano</option>
-                                        <option value="pd">Padova</option>
-                                        <option value="pa">Palermo</option>
-                                        <option value="pr">Parma</option>
-                                        <option value="pv">Pavia</option>
-                                        <option value="pg">Perugia</option>
-                                        <option value="pu">Pesaro e Urbino</option>
-                                        <option value="pe">Pescara</option>
-                                        <option value="pc">Piacenza</option>
-                                        <option value="pi">Pisa</option>
-                                        <option value="pt">Pistoia</option>
-                                        <option value="pn">Pordenone</option>
-                                        <option value="pz">Potenza</option>
-                                        <option value="po">Prato</option>
-                                        <option value="rg">Ragusa</option>
-                                        <option value="ra">Ravenna</option>
-                                        <option value="rc">Reggio di Calabria</option>
-                                        <option value="re">Reggio nell Emilia</option>
-                                        <option value="ri">Rieti</option>
-                                        <option value="rn">Rimini</option>
-                                        <option value="rm">Roma</option>
-                                        <option value="ro">Rovigo</option>
-                                        <option value="sa">Salerno</option>
-                                        <option value="ss">Sassari</option>
-                                        <option value="sv">Savona</option>
-                                        <option value="si">Siena</option>
-                                        <option value="sr">Siracusa</option>
-                                        <option value="so">Sondrio</option>
-                                        <option value="ta">Taranto</option>
-                                        <option value="te">Teramo</option>
-                                        <option value="tr">Terni</option>
-                                        <option value="to">Torino</option>
-                                        <option value="tp">Trapani</option>
-                                        <option value="tn">Trento</option>
-                                        <option value="tv">Treviso</option>
-                                        <option value="ts">Trieste</option>
-                                        <option value="ud">Udine</option>
-                                        <option value="va">Varese</option>
-                                        <option value="ve">Venezia</option>
-                                        <option value="vb">Verbano-Cusio-Ossola</option>
-                                        <option value="vc">Vercelli</option>
-                                        <option value="vr">Verona</option>
-                                        <option value="vv">Vibo valentia</option>
-                                        <option value="vi">Vicenza</option>
-                                        <option value="vt">Viterbo</option>
-                    </select>
-                    </form>
-		    </div>';	    
-	//END
 
         $paypal_checkout_url = WP_CART_LIVE_PAYPAL_URL;
         if (get_option('wp_shopping_cart_enable_sandbox')) {
@@ -337,6 +204,150 @@ function print_wp_shopping_cart($args = array()) {
         $output .= "<tr class='wpspsc_checkout_form'><td colspan='4'>";
         $output .= '<form action="' . $paypal_checkout_url . '" method="post" ' . $form_target_code . '>';
         $output .= $form;
+	    
+      	// ADDED VALUES
+	$output .= '<input type="hidden" name="address_override" value="1">
+		    <div class="infos_area">
+		    	<div class="user_infos">
+    		    		Nome:  <input type="text" name="first_name" value="" required="required" class="name_style">
+		    		Cognome: <input type="text" name="last_name" value="" required="required" class="surname_style">
+		    	</div>
+			<div class="address_infos">
+               	    		Indirizzo: <input type="text" name="address1" value="" required="required" class="address_style">
+  	  	    		Località: <input type="text" name="city" value="" required="required" class="city_style">
+    		    		Provincia: <select id="provincia" name="state" required="required" class="state_style">
+                                        <option value="">Provincia</option>
+                                        <option value="AG">Agrigento</option>
+                                        <option value="AL">Alessandria</option>
+                                        <option value="AN">Ancona</option>
+                                        <option value="AO">Aosta</option>
+                                        <option value="AR">Arezzo</option>
+                                        <option value="AP">Ascoli Piceno</option>
+                                        <option value="AT">Asti</option>
+                                        <option value="AV">Avellino</option>
+                                        <option value="BA">Bari</option>
+                                        <option value="BT">Barletta-Andria-Trani</option>
+                                        <option value="BL">Belluno</option>
+                                        <option value="BN">Benevento</option>
+                                        <option value="BG">Bergamo</option>
+                                        <option value="BI">Biella</option>
+                                        <option value="BO">Bologna</option>
+                                        <option value="BZ">Bolzano</option>
+                                        <option value="BS">Brescia</option>
+                                        <option value="BR">Brindisi</option>
+                                        <option value="CA">Cagliari</option>
+                                        <option value="CL">Caltanissetta</option>
+                                        <option value="CB">Campobasso</option>
+                                        <option value="CI">Carbonia-iglesias</option>
+                                        <option value="CE">Caserta</option>
+                                        <option value="CT">Catania</option>
+                                        <option value="C>">Catanzaro</option>
+                                        <option value="CH">Chieti</option>
+                                        <option value="CO">Como</option>
+                                        <option value="CS">Cosenza</option>
+                                        <option value="CR">Cremona</option>
+                                        <option value="KR">Crotone</option>
+                                        <option value="CN">Cuneo</option>
+                                        <option value="EN">Enna</option>
+                                        <option value="FM">Fermo</option>
+                                        <option value="FE">Ferrara</option>
+                                        <option value="FI">Firenze</option>
+                                        <option value="FG">Foggia</option>
+                                        <option value="FC">Forlì-Cesena</option>
+                                        <option value="FR">Frosinone</option>
+                                        <option value="GE">Genova</option>
+                                        <option value="GO">Gorizia</option>
+                                        <option value="GR">Grosseto</option>
+                                        <option value="IM">Imperia</option>
+                                        <option value="IS">Isernia</option>
+                                        <option value="SP">La spezia</option>
+                                        <option value="AQ">L aquila</option>
+                                        <option value="LT">Latina</option>
+                                        <option value="LE">Lecce</option>
+                                        <option value="LC">Lecco</option>
+                                        <option value="LI">Livorno</option>
+                                        <option value="LO">Lodi</option>
+                                        <option value="LU">Lucca</option>
+                                        <option value="MC">Macerata</option>
+                                        <option value="MN">Mantova</option>
+                                        <option value="MS">Massa-Carrara</option>
+                                        <option value="MT">Matera</option>
+                                        <option value="VS">Medio Campidano</option>
+                                        <option value="ME">Messina</option>
+                                        <option value="MI">Milano</option>
+                                        <option value="MO">Modena</option>
+                                        <option value="MB">Monza e della Brianza</option>
+                                        <option value="NA">Napoli</option>
+                                        <option value="NO">Novara</option>
+                                        <option value="NU">Nuoro</option>
+                                        <option value="OG">Ogliastra</option>
+                                        <option value="OT">Olbia-Tempio</option>
+                                        <option value="OR">Oristano</option>
+                                        <option value="PD">Padova</option>
+                                        <option value="PA">Palermo</option>
+                                        <option value="PR">Parma</option>
+                                        <option value="PV">Pavia</option>
+                                        <option value="PG">Perugia</option>
+                                        <option value="PU">Pesaro e Urbino</option>
+                                        <option value="PE">Pescara</option>
+                                        <option value="PC">Piacenza</option>
+                                        <option value="PI">Pisa</option>
+                                        <option value="PT">Pistoia</option>
+                                        <option value="PN">Pordenone</option>
+                                        <option value="PZ">Potenza</option>
+                                        <option value="PO">Prato</option>
+                                        <option value="RG">Ragusa</option>
+                                        <option value="RA">Ravenna</option>
+                                        <option value="RC">Reggio di Calabria</option>
+                                        <option value="RE">Reggio nell Emilia</option>
+                                        <option value="RI">Rieti</option>
+                                        <option value="RN">Rimini</option>
+                                        <option value="RM">Roma</option>
+                                        <option value="RO">Rovigo</option>
+                                        <option value="SA">Salerno</option>
+                                        <option value="SS">Sassari</option>
+                                        <option value="SV">Savona</option>
+                                        <option value="SI">Siena</option>
+                                        <option value="SR">Siracusa</option>
+                                        <option value="SO">Sondrio</option>
+                                        <option value="TA">Taranto</option>
+                                        <option value="TE">Teramo</option>
+                                        <option value="TR">Terni</option>
+                                        <option value="TO">Torino</option>
+                                        <option value="TP">Trapani</option>
+                                        <option value="TN">Trento</option>
+                                        <option value="TV">Treviso</option>
+                                        <option value="TS">Trieste</option>
+                                        <option value="UD">Udine</option>
+                                        <option value="VA">Varese</option>
+                                        <option value="VE">Venezia</option>
+                                        <option value="VB">Verbano-Cusio-Ossola</option>
+                                        <option value="VC">Vercelli</option>
+                                        <option value="VR">Verona</option>
+                                        <option value="VV">Vibo valentia</option>
+                                        <option value="VI">Vicenza</option>
+                                        <option value="VT">Viterbo</option>
+                    		</select>
+  		    		CAP: <input type="text" name="zip" value="" required="required" class="zip_style">
+			</div>
+			<div class="privacy_check">
+                    		<div class="icheckbox_square-grey" style="position: relative;">
+                    			<input id="orderPrivacy" type="checkbox" class="js-order-check" name="orderPrivacy" required="required">
+                        		<ins class="iCheck-helper" style="width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
+                    		</div>
+                    		<label class="label-privacy">Acconsento al 
+                    			<a href="http://www.paipo.org/privacy" target="_blank">trattamento dei dati</a>
+                    		</label>
+			</div>
+		    </div>
+  		    <input type="hidden" name="country" value="IT" required="required">';
+	    
+      // CF:
+      // <input type="text" name="input_CF" value="" size="10" pattern="^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]$" required="required"/>
+      // <input type="text" name="state" value="" required="required">
+      //email: <input type="email" name="email" value="" required="required"/>
+      // END ADDED VALUES
+	    
         if ($count) {
             $checkout_button_img_src = WP_CART_URL . '/images/' . (__("paypal_checkout_EN.png", "wordpress-simple-paypal-shopping-cart"));
             $output .= '<input type="image" src="' . apply_filters('wspsc_cart_checkout_button_image_src', $checkout_button_img_src) . '" name="submit" class="wp_cart_checkout_button" alt="' . (__("Make payments with PayPal - it\'s fast, free and secure!", "wordpress-simple-paypal-shopping-cart")) . '" />';
