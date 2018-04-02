@@ -196,7 +196,7 @@ function print_wp_shopping_cart($args = array()) {
 		    Cognome:
 		    <input type="text" name="input_surname" value="" size="10" required="required"/>
 		    email:
-		    <input type="text" name="input_email" value="" size="10" required="required"/>
+		    <input type="email" name="input_email" value="" size="10" required="required"/>
 		    CF:
 		    <input type="text" name="input_CF" value="" size="10" pattern="^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]$" required="required"/>
 		    Via:
