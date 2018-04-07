@@ -309,7 +309,13 @@ class paypal_ipn_handler {
         $args['order_id'] = $post_id;
         $args['coupon_code'] = $applied_coupon_code; 
         $args['address'] = $address;
-        $args['payer_email'] = $userMail;
+        $args['payer_email'] = $buyer_email;
+      	
+      	// ADDED INFOS
+      	$args['cf'] = $cf;
+      	$args['user_mail'] = $userMail;
+	$args['address_name'] = $address_name;
+      	// END ADDED INFOS
       
         $from_email = get_option('wpspc_buyer_from_email');
         $subject = get_option('wpspc_buyer_email_subj');
