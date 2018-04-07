@@ -1,11 +1,7 @@
 <?php
-
 status_header(200);
-
 $debug_log = "ipn_handle_debug.txt"; // Debug log file name
-
 class paypal_ipn_handler {
-
    var $last_error;                 // holds the last error encountered
    var $ipn_log;                    // bool: log IPN results to text file?
    var $ipn_log_file;               // filename of the IPN log
@@ -13,7 +9,6 @@ class paypal_ipn_handler {
    var $ipn_data = array();         // array contains the POST values for IPN
    var $fields = array();           // array holds the fields to submit to paypal
    var $sandbox_mode = false;
-
     function __construct()
     {
         $this->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';
@@ -21,11 +16,10 @@ class paypal_ipn_handler {
       	$this->ipn_log_file = WP_CART_PATH.'ipn_handle_debug.txt';
       	$this->ipn_response = '';
     }
-
     function validate_and_dispatch_product()
     {
         //Check Product Name, Price, Currency, Receiver email
-        
+      
         //Decode the custom field before sanitizing.
         $custom_field_value = urldecode($this->ipn_data['custom']);//urldecode is harmless
         $this->ipn_data['custom'] = $custom_field_value;
@@ -73,7 +67,6 @@ class paypal_ipn_handler {
             // Cart Items
             $num_cart_items = $this->ipn_data['num_cart_items'];
             $this->debug_log('Number of Cart Items: '.$num_cart_items,true);
-
             $i = 1;
             $cart_items = array();
             while($i < $num_cart_items+1)
@@ -84,7 +77,6 @@ class paypal_ipn_handler {
                 $quantity = $this->ipn_data['quantity' . $i];
                 $mc_gross = $this->ipn_data['mc_gross_' . $i];
                 $mc_currency = $this->ipn_data['mc_currency'];
-
                 $current_item = array(
                     'item_number' => $item_number,
                     'item_name' => $item_name,
@@ -92,7 +84,6 @@ class paypal_ipn_handler {
                     'mc_gross' => $mc_gross,
                     'mc_currency' => $mc_currency,
                 );
-
                 array_push($cart_items, $current_item);
                 $i++;
             }
@@ -107,7 +98,6 @@ class paypal_ipn_handler {
             $quantity = $this->ipn_data['quantity'];
             $mc_gross = $this->ipn_data['mc_gross'];
             $mc_currency = $this->ipn_data['mc_currency'];
-
             $current_item = array(
                 'item_number' => $item_number,
                 'item_name' => $item_name,
@@ -117,9 +107,7 @@ class paypal_ipn_handler {
             );
             array_push($cart_items, $current_item);
         }
-
         $payment_currency = get_option('cart_payment_currency');
-
         $individual_paid_item_total = 0;
         foreach ($cart_items as $current_cart_item)
         {
@@ -129,13 +117,11 @@ class paypal_ipn_handler {
             $cart_item_data_total = $current_cart_item['mc_gross'];
             $cart_item_data_currency = $current_cart_item['mc_currency'];
             $individual_paid_item_total += $cart_item_data_total;
-
             $this->debug_log('Item Number: '.$cart_item_data_num,true);
             $this->debug_log('Item Name: '.$cart_item_data_name,true);
             $this->debug_log('Item Quantity: '.$cart_item_data_quantity,true);
             $this->debug_log('Item Total: '.$cart_item_data_total,true);
             $this->debug_log('Item Currency: '.$cart_item_data_currency,true);
-
             // Compare the currency values to make sure it is correct.
             if ($payment_currency != $cart_item_data_currency)
             {
@@ -164,7 +150,6 @@ class paypal_ipn_handler {
             $this->debug_log('Order ID '.$post_id.' does not exist in the database. This is not a Simple PayPal Shopping Cart order', false);
             return;
         }
-
         if (get_option('wp_shopping_cart_strict_email_check') != '')
         {
             $seller_paypal_email = get_option('cart_paypal_email');
@@ -177,7 +162,6 @@ class paypal_ipn_handler {
                 $this->debug_log('Seller Paypal Email Address is Valid: '.$this->ipn_data['receiver_email'],true);
             }
         }
-
         $transaction_id = get_post_meta( $post_id, 'wpsc_txn_id', true );
         if(!empty($transaction_id))
         {
@@ -187,12 +171,80 @@ class paypal_ipn_handler {
                 return;
             }
         }
-
+      
+      	// ADDED INFOS CHECK
+      	$address_name = $this->ipn_data['address_name'];
+        $splitted_address = explode(" ", $address_name);
+        if($splitted_address[0] == '' || $splitted_address[1] == ''){
+            $this->debug_log('Required Name/Surname fields are empty.', false);
+            //$this->debug_log('Address:'.$address_name.'_END', false);
+          	//$this->debug_log('Name:'.$splitted_address[0].'_END', false);
+          	//$this->debug_log('Surname:'.$splitted_address[1].'_END', false);
+            return;
+        }
+      
+      	if($street_address == '' || $city == '' || $state == '' || $zip == '' || $country == '' ){
+            $this->debug_log('Required Address fields are empty.', false);
+          	//$this->debug_log('Street Address:'.$street_address.'_END', false);
+          	//$this->debug_log('City:'.$city.'_END', false);
+          	//$this->debug_log('State:'.$state.'_END', false);
+          	//$this->debug_log('Zip:'.$zip.'_END', false);
+          	//$this->debug_log('Country:'.$country.'_END', false);
+            return;
+        }
+      
+      	if($country !== 'Italy' && $country !== 'italy' && $country !== 'Italia' && $country !== 'italia' ){
+      		$this->debug_log('Ship only to Italy.', false);
+          	//$this->debug_log('Country:'.$country.'_END', false);
+            return;
+        }
+      
+      	$cf = $custom_values['cf'];
+      	$userMail = $custom_values['userMail'];
+      	$dataTratment = $custom_values['dataTratment'];
+      	
+      	if($dataTratment !== 'on' && $dataTratment !== 'On' && $dataTratment !== 'ON') {
+        	$this->debug_log('Data tratment not accepted.', false);
+            //$this->debug_log('dt:'.$dataTratment.'_END', false);
+            return;
+        }
+      
+      	if (!filter_var($userMail, FILTER_VALIDATE_EMAIL)) {
+          $this->debug_log('Invalid email format', false);
+          //$this->debug_log('userMail:'.$userMail.'_END', false);
+          return;
+		}
+      	
+      	$matches = null;
+		$returnValue = preg_match("/^[a-zA-Z]{6}[0-9]{2}[a-zA-Z][0-9]{2}[a-zA-Z][0-9]{3}[a-zA-Z]$/", $cf, $matches);
+      	if($returnValue !== 1) {
+          $this->debug_log('Invalid cf format', false);
+    	  //$this->debug_log('cf:'.$cf.'_END', false);
+          return;
+        }
+      
+      	// END
+      
         //Validate prices
         $orig_individual_item_total = 0;
+      	$amount_of_item = 0;
         foreach ($orig_cart_items as $item){
             $orig_individual_item_total += $item['price'] * $item['quantity'];
+          	$$amount_of_item += $item['quantity'];
         }
+      
+      	// Setup shipping costs based on items quantity
+      	$postage_cost = 0;
+		if($amount_of_item <= 4) {
+	  		$postage_cost = 4;
+		} else if($total_items <= 6) {
+	  		$postage_cost = 6.70;
+		} else if($total_items <= 9) {
+	  		$postage_cost = 7.70;
+		} else if($total_items >= 10) {
+	  		$postage_cost = 9;
+		}
+      	$orig_individual_item_total += $postage_cost;
         
         $orig_individual_item_total = round($orig_individual_item_total,2);
         $individual_paid_item_total = round($individual_paid_item_total,2);
@@ -203,14 +255,12 @@ class paypal_ipn_handler {
             return;
         }
         //*** End of security check ***
-
         $updated_wpsc_order = array(
             'ID'             => $post_id,
             'post_status'    => 'publish',
             'post_type'     => 'wpsc_cart_orders',
         );
         wp_update_post($updated_wpsc_order);
-
         update_post_meta( $post_id, 'wpsc_first_name', $first_name );
         update_post_meta( $post_id, 'wpsc_last_name', $last_name );
         update_post_meta( $post_id, 'wpsc_email_address', $buyer_email );
@@ -259,8 +309,8 @@ class paypal_ipn_handler {
         $args['order_id'] = $post_id;
         $args['coupon_code'] = $applied_coupon_code; 
         $args['address'] = $address;
-        $args['payer_email'] = $buyer_email;
-        
+        $args['payer_email'] = $userMail;
+      
         $from_email = get_option('wpspc_buyer_from_email');
         $subject = get_option('wpspc_buyer_email_subj');
 	$subject = wpspc_apply_dynamic_tags_on_email($subject, $this->ipn_data, $args);
@@ -268,30 +318,26 @@ class paypal_ipn_handler {
         $body = get_option('wpspc_buyer_email_body');
         $args['email_body'] = $body;
         $body = wpspc_apply_dynamic_tags_on_email($body, $this->ipn_data, $args);
-
         $this->debug_log('Applying filter - wspsc_buyer_notification_email_body', true);
         $body = apply_filters('wspsc_buyer_notification_email_body', $body, $this->ipn_data, $cart_items);            
-
         $headers = 'From: '.$from_email . "\r\n";
-        if(!empty($buyer_email)){
+        if(!empty($userMail)){
             if(get_option('wpspc_send_buyer_email'))
             {
-                wp_mail($buyer_email, $subject, $body, $headers);
-                $this->debug_log('Product Email successfully sent to '.$buyer_email,true);
-                update_post_meta( $post_id, 'wpsc_buyer_email_sent', 'Email sent to: '.$buyer_email);
+                wp_mail($userMail, $subject, $body, $headers);
+                $this->debug_log('Product Email successfully sent to '.$userMail,true);
+                update_post_meta( $post_id, 'wpsc_buyer_email_sent', 'Email sent to: '.$userMail);
             }
         }
         $notify_email = get_option('wpspc_notify_email_address');
         $seller_email_subject = get_option('wpspc_seller_email_subj');
-	$seller_email_subject = wpspc_apply_dynamic_tags_on_email($seller_email_subject, $this->ipn_data, $args);
+		$seller_email_subject = wpspc_apply_dynamic_tags_on_email($seller_email_subject, $this->ipn_data, $args);
 	
         $seller_email_body = get_option('wpspc_seller_email_body');
         $args['email_body'] = $seller_email_body;
         $seller_email_body = wpspc_apply_dynamic_tags_on_email($seller_email_body, $this->ipn_data, $args);
-
         $this->debug_log('Applying filter - wspsc_seller_notification_email_body', true);
         $seller_email_body = apply_filters('wspsc_seller_notification_email_body', $seller_email_body, $this->ipn_data, $cart_items);
-
         if(!empty($notify_email)){
             if(get_option('wpspc_send_seller_email'))
             {
@@ -299,8 +345,6 @@ class paypal_ipn_handler {
                 $this->debug_log('Notify Email successfully sent to '.$notify_email,true);
             }
         }
-
-
         /**** Affiliate plugin integratin ****/
         $this->debug_log('Updating Affiliate Database Table with Sales Data if Using the WP Affiliate Platform Plugin.',true);       
         if (function_exists('wp_aff_platform_install'))
@@ -311,7 +355,6 @@ class paypal_ipn_handler {
             if (!empty($referrer))
             {	
                 do_action('wp_affiliate_process_cart_commission', array("referrer" => $referrer, "sale_amt" => $sale_amount, "txn_id" => $txn_id, "buyer_email" => $buyer_email));
-
                 $message = 'The sale has been registered in the WP Affiliates Platform Database for referrer: '.$referrer.' for sale amount: '.$sale_amount;
                 $this->debug_log($message,true);				
             }
@@ -341,10 +384,8 @@ class paypal_ipn_handler {
             $this->ipn_data["$field"] = $value;
             $post_string .= $field . '=' . urlencode(stripslashes($value)) . '&';
         }
-
         $this->post_string = $post_string;
         $this->debug_log('Post string : ' . $this->post_string, true);
-
         //IPN validation check
         if($this->validate_ipn_using_remote_post()){
             //We can also use an alternative validation using the validate_ipn_using_curl() function
@@ -360,7 +401,6 @@ class paypal_ipn_handler {
         // Get received values from post data
         $validate_ipn = array( 'cmd' => '_notify-validate' );
         $validate_ipn += wp_unslash( $_POST );
-
         // Send back post vars to paypal
         $params = array(
                 'body'        => $validate_ipn,
@@ -370,22 +410,18 @@ class paypal_ipn_handler {
                 'decompress'  => false,
                 'user-agent'  => 'Simple PayPal Shopping Cart/' . WP_CART_VERSION
         );
-
         // Post back to get a response.
         $connection_url = $this->sandbox_mode ? 'https://www.sandbox.paypal.com/cgi-bin/webscr' : 'https://www.paypal.com/cgi-bin/webscr';
         $this->debug_log('Connecting to: ' . $connection_url, true);
         $response = wp_safe_remote_post( $connection_url, $params );
-
         //The following two lines can be used for debugging
         //$this->debug_log( 'IPN Request: ' . print_r( $params, true ) , true);
         //$this->debug_log( 'IPN Response: ' . print_r( $response, true ), true);
-
         // Check to see if the request was valid.
         if ( ! is_wp_error( $response ) && strstr( $response['body'], 'VERIFIED' ) ) {
             $this->debug_log('IPN successfully verified.', true);
             return true;
         }
-
         // Invalid IPN transaction. Check the log for details.
         $this->debug_log('IPN validation failed.', false);
         if ( is_wp_error( $response ) ) {
@@ -393,46 +429,34 @@ class paypal_ipn_handler {
         }
         return false;        
     }
-
    function log_ipn_results($success)
    {
       if (!$this->ipn_log) return;  // is logging turned off?
-
       // Timestamp
       $text = '['.date('m/d/Y g:i A').'] - ';
-
       // Success or failure being logged?
       if ($success) $text .= "SUCCESS!\n";
       else $text .= 'FAIL: '.$this->last_error."\n";
-
       // Log the POST variables
       $text .= "IPN POST Vars from Paypal:\n";
       foreach ($this->ipn_data as $key=>$value) {
          $text .= "$key=$value, ";
       }
-
       // Log the response from the paypal server
       $text .= "\nIPN Response from Paypal Server:\n ".$this->ipn_response;
-
       // Write to log
       $fp=fopen($this->ipn_log_file,'a');
       fwrite($fp, $text . "\n\n");
-
       fclose($fp);  // close file
    }
-
    function debug_log($message,$success,$end=false)
    {
-
    	  if (!$this->ipn_log) return;  // is logging turned off?
-
       // Timestamp
       $text = '['.date('m/d/Y g:i A').'] - '.(($success)?'SUCCESS :':'FAILURE :').$message. "\n";
-
       if ($end) {
       	$text .= "\n------------------------------------------------------------------\n\n";
       }
-
       // Write to log
       $fp=fopen($this->ipn_log_file,'a');
       fwrite($fp, $text );
@@ -448,7 +472,6 @@ class paypal_ipn_handler {
         $var = ob_get_contents(); 
         ob_end_clean();     
         $text .= $var;
-
         if ($end) 
         {
             $text .= "\n------------------------------------------------------------------\n\n";
@@ -458,20 +481,18 @@ class paypal_ipn_handler {
         fwrite($fp, $text );
         fclose($fp);  // close filee
     }
+   
 }
-
 // Start of IPN handling (script execution)
 function wpc_handle_paypal_ipn()
 {
     $debug_log = "ipn_handle_debug.txt"; // Debug log file name    
     $ipn_handler_instance = new paypal_ipn_handler();
-
     $debug_enabled = false;
     $debug = get_option('wp_shopping_cart_enable_debug');
     if ($debug){
         $debug_enabled = true;
     }
-
     if ($debug_enabled)
     {
         echo 'Debug is enabled. Check the '.$debug_log.' file for debug output.';
@@ -496,4 +517,3 @@ function wpc_handle_paypal_ipn()
     }
     $ipn_handler_instance->debug_log('Paypal class finished.',true,true);
 }
-
