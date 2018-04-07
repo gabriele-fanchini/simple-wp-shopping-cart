@@ -1,5 +1,4 @@
 <?php
-
 /*
   Plugin Name: WP Simple Paypal Shopping cart
   Version: 4.4.0
@@ -10,13 +9,10 @@
   Text Domain: wordpress-simple-paypal-shopping-cart
   Domain Path: /languages/
  */
-
 //Slug - wspsc
-
 if (!defined('ABSPATH')) {//Exit if accessed directly
     exit;
 }
-
 if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
@@ -26,7 +22,6 @@ if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
         session_start();
     }
 }
-
 define('WP_CART_VERSION', '4.3.9');
 define('WP_CART_FOLDER', dirname(plugin_basename(__FILE__)));
 define('WP_CART_PATH', plugin_dir_path(__FILE__));
@@ -39,14 +34,11 @@ if (!defined('WP_CART_MANAGEMENT_PERMISSION')) {//This will allow the user to de
     define('WP_CART_MANAGEMENT_PERMISSION', 'manage_options');
 }
 define('WP_CART_MAIN_MENU_SLUG', 'wspsc-menu-main');
-
-
 // loading language files
 //Set up localisation. First loaded overrides strings present in later loaded file
 $locale = apply_filters('plugin_locale', get_locale(), 'wordpress-simple-paypal-shopping-cart');
 load_textdomain('wordpress-simple-paypal-shopping-cart', WP_LANG_DIR . "/wordpress-simple-paypal-shopping-cart-$locale.mo");
 load_plugin_textdomain('wordpress-simple-paypal-shopping-cart', false, WP_CART_FOLDER . '/languages');
-
 include_once('wp_shopping_cart_utility_functions.php');
 include_once('wp_shopping_cart_shortcodes.php');
 include_once('wp_shopping_cart_misc_functions.php');
@@ -55,11 +47,9 @@ include_once('class-coupon.php');
 include_once('includes/wspsc-cart-functions.php');
 include_once('includes/admin/wp_shopping_cart_menu_main.php');
 include_once('includes/admin/wp_shopping_cart_tinymce.php');
-
 function always_show_cart_handler($atts) {
     return print_wp_shopping_cart($atts);
 }
-
 function show_wp_shopping_cart_handler($atts) {
     $output = "";
     if (cart_not_empty()) {
@@ -67,7 +57,6 @@ function show_wp_shopping_cart_handler($atts) {
     }
     return $output;
 }
-
 function shopping_cart_show($content) {
     if (strpos($content, "<!--show-wp-shopping-cart-->") !== FALSE) {
         if (cart_not_empty()) {
@@ -79,12 +68,10 @@ function shopping_cart_show($content) {
     }
     return $content;
 }
-
 // Reset cart option
 if (isset($_REQUEST["reset_wp_cart"]) && !empty($_REQUEST["reset_wp_cart"])) {
     reset_wp_cart();
 }
-
 //Clear the cart if the customer landed on the thank you page (if this option is enabled)
 if (get_option('wp_shopping_cart_reset_after_redirection_to_return_page')) {
     //TODO - remove this field altogether later. Cart will always be reset using query prameter on the thank you page.
@@ -92,7 +79,6 @@ if (get_option('wp_shopping_cart_reset_after_redirection_to_return_page')) {
         reset_wp_cart();
     }
 }
-
 function reset_wp_cart() {
     if (!isset($_SESSION['simpleCart'])) {
         return;
@@ -110,10 +96,8 @@ function reset_wp_cart() {
     unset($_SESSION['wpspsc_discount_applied_once']);
     unset($_SESSION['wpspsc_applied_coupon_code']);
 }
-
 function wpspc_cart_actions_handler() {
     unset($_SESSION['wpspsc_cart_action_msg']);
-
     if (isset($_POST['addcart'])) {//Add to cart action
         //Some sites using caching need to be able to disable nonce on the add cart button. Otherwise 48 hour old cached pages will have stale nonce value and fail for valid users.
         if (get_option('wspsc_disable_nonce_add_cart')) {
@@ -126,12 +110,10 @@ function wpspc_cart_actions_handler() {
                 wp_die('Error! Nonce Security Check Failed!');
             }
         }
-
         setcookie("cart_in_use", "true", time() + 21600, "/", COOKIE_DOMAIN);  //useful to not serve cached page when using with a caching plugin
         if (function_exists('wp_cache_serve_cache_file')) {//WP Super cache workaround
             setcookie("comment_author_", "wp_cart", time() + 21600, "/", COOKIE_DOMAIN);
         }
-
         //Sanitize post data
         $post_wspsc_product = isset($_POST['wspsc_product']) ? stripslashes(sanitize_text_field($_POST['wspsc_product'])) : '';
         $post_item_number = isset($_POST['item_number']) ? sanitize_text_field($_POST['item_number']) : '';
@@ -157,7 +139,6 @@ function wpspc_cart_actions_handler() {
         } else {
             wp_die('Error! Missing price value. The price must be set.');
         }
-
         //Sanitize and validate shipping price
         if (isset($_POST['shipping'])) {
             $shipping = sanitize_text_field($_POST['shipping']);
@@ -167,7 +148,6 @@ function wpspc_cart_actions_handler() {
             if ($hash_two_val != $hash_two_cm) {//Shipping validation failed
                 wp_die('Error! The shipping price validation failed.');
             }
-
             $shipping = str_replace(WP_CART_CURRENCY_SYMBOL, "", $shipping); //Remove any currency symbol from the price.
             //Check that the shipping price field is numeric.
             if (!is_numeric($shipping)) {//Shipping price validation failed
@@ -177,8 +157,6 @@ function wpspc_cart_actions_handler() {
         } else {
             wp_die('Error! Missing shipping price value. The price must be set.');
         }
-
-
         $count = 1;
         $products = array();
         if (isset($_SESSION['simpleCart'])) {
@@ -196,12 +174,10 @@ function wpspc_cart_actions_handler() {
                 $products = array();
             }
         }
-
         if ($count == 1) {
             //This is the first quantity of this item.
 	    // Minimum quantity permitted is 2, so we will add +1 to the $count
 	    $count++;
-
             $product = array('name' => $post_wspsc_product, 'price' => $price, 'price_orig' => $price, 'quantity' => $count, 'shipping' => $shipping, 'cartLink' => $post_cart_link, 'item_number' => $post_item_number);
             if (!empty($post_encoded_file_val)) {
                 $product['file_url'] = $post_encoded_file_val;
@@ -210,15 +186,11 @@ function wpspc_cart_actions_handler() {
                 $product['thumbnail'] = $post_thumbnail;
             }
             $product['stamp_pdf'] = $post_stamp_pdf;
-
             array_push($products, $product);
         }
-
         sort($products);
         $_SESSION['simpleCart'] = $products;
-
         wpspsc_reapply_discount_coupon_if_needed(); //Re-apply coupon to the cart if necessary
-
         if (!isset($_SESSION['simple_cart_id']) && empty($_SESSION['simple_cart_id'])) {
             wpspc_insert_new_record();
         } else {
@@ -229,8 +201,6 @@ function wpspc_cart_actions_handler() {
                 echo "<p>" . (__("Error! Your session is out of sync. Please reset your session.", "wordpress-simple-paypal-shopping-cart")) . "</p>";
             }
         }
-
-
         if (get_option('wp_shopping_cart_auto_redirect_to_checkout_page')) {
             $checkout_url = get_option('cart_checkout_page_url');
             if (empty($checkout_url)) {
@@ -274,9 +244,7 @@ function wpspc_cart_actions_handler() {
         }
         sort($products);
         $_SESSION['simpleCart'] = $products;
-
         wpspsc_reapply_discount_coupon_if_needed(); //Re-apply coupon to the cart if necessary
-
         if (isset($_SESSION['simple_cart_id']) && !empty($_SESSION['simple_cart_id'])) {
             wpspc_update_cart_items_record();
         }
@@ -297,9 +265,7 @@ function wpspc_cart_actions_handler() {
                 unset($products[$key]);
         }
         $_SESSION['simpleCart'] = $products;
-
         wpspsc_reapply_discount_coupon_if_needed(); //Re-apply coupon to the cart if necessary
-
         if (isset($_SESSION['simple_cart_id']) && !empty($_SESSION['simple_cart_id'])) {
             wpspc_update_cart_items_record();
         }
@@ -323,21 +289,18 @@ function wpspc_cart_actions_handler() {
         }
     }
 }
-
 function wp_cart_add_custom_field() {
     $_SESSION['wp_cart_custom_values'] = "";
     $custom_field_val = "";
     $name = 'wp_cart_id';
     $value = $_SESSION['simple_cart_id'];
     $custom_field_val = wpc_append_values_to_custom_field($name, $value);
-
     $clientip = $_SERVER['REMOTE_ADDR'];
     if (!empty($clientip)) {
         $name = 'ip';
         $value = $clientip;
         $custom_field_val = wpc_append_values_to_custom_field($name, $value);
     }
-
     if (function_exists('wp_aff_platform_install')) {
         $name = 'ap_id';
         $value = '';
@@ -350,27 +313,23 @@ function wp_cart_add_custom_field() {
             $custom_field_val = wpc_append_values_to_custom_field($name, $value);
         }
     }
-
     if (isset($_SESSION['wpspsc_applied_coupon_code'])) {
         $name = "coupon_code";
         $value = $_SESSION['wpspsc_applied_coupon_code'];
         $custom_field_val = wpc_append_values_to_custom_field($name, $value);
     }
-
-    $custom_field_val = apply_filters('wpspc_cart_custom_field_value', $custom_field_val);
-    $custom_field_val = urlencode($custom_field_val); //URL encode the custom field value so nothing gets lost when it is passed around.
-    $output = '<input type="hidden" name="custom" value="' . $custom_field_val . '" />';
+    //$custom_field_val = apply_filters('wpspc_cart_custom_field_value', $custom_field_val);
+    //$custom_field_val = urlencode($custom_field_val); //URL encode the custom field value so nothing gets lost when it is passed around.
+    //$output = '<input type="hidden" name="custom" value="' . $custom_field_val . '" />';
+  	$output = $custom_field_val;
     return $output;
 }
-
 function print_wp_cart_button_new($content) {
     $addcart = get_option('addToCartButtonName');
     if (!$addcart || ($addcart == ''))
         $addcart = __("Add to Cart", "wordpress-simple-paypal-shopping-cart");
-
     $pattern = '#\[wp_cart:.+:price:.+:end]#';
     preg_match_all($pattern, $content, $matches);
-
     foreach ($matches[0] as $match) {
         $var_output = '';
         $pos = strpos($match, ":var1");
@@ -383,13 +342,11 @@ function print_wp_cart_button_new($content) {
                 preg_match_all($pattern, $match_tmp, $matches3);
                 $match3 = $matches3[0][0];
                 $match_tmp = str_replace($match3, '', $match_tmp);
-
                 $pattern = 'var2[';
                 $m3 = str_replace($pattern, '', $match3);
                 $pattern = ']:';
                 $m3 = str_replace($pattern, '', $m3);
                 $pieces3 = explode('|', $m3);
-
                 $variation2_name = $pieces3[0];
                 $var_output .= $variation2_name . " : ";
                 $var_output .= '<select name="variation2" onchange="ReadForm (this.form, false);">';
@@ -398,19 +355,15 @@ function print_wp_cart_button_new($content) {
                 }
                 $var_output .= '</select><br />';
             }
-
             $pattern = '#var1\[.*]:#';
             preg_match_all($pattern, $match_tmp, $matches2);
             $match2 = $matches2[0][0];
-
             $match_tmp = str_replace($match2, '', $match_tmp);
-
             $pattern = 'var1[';
             $m2 = str_replace($pattern, '', $match2);
             $pattern = ']:';
             $m2 = str_replace($pattern, '', $m2);
             $pieces2 = explode('|', $m2);
-
             $variation_name = $pieces2[0];
             $var_output .= $variation_name . " : ";
             $var_output .= '<select name="variation1" onchange="ReadForm (this.form, false);">';
@@ -419,27 +372,21 @@ function print_wp_cart_button_new($content) {
             }
             $var_output .= '</select><br />';
         }
-
         $pattern = '[wp_cart:';
         $m = str_replace($pattern, '', $match);
-
         $pattern = 'price:';
         $m = str_replace($pattern, '', $m);
         $pattern = 'shipping:';
         $m = str_replace($pattern, '', $m);
         $pattern = ':end]';
         $m = str_replace($pattern, '', $m);
-
         $pieces = explode(':', $m);
-
         $replacement = '<div class="wp_cart_button_wrapper">';
         $replacement .= '<form method="post" class="wp-cart-button-form" action="" style="display:inline" onsubmit="return ReadForm(this, true);" ' . apply_filters("wspsc_add_cart_button_form_attr", "") . '>';
         $replacement .= wp_nonce_field('wspsc_addcart', '_wpnonce', true, false); //nonce value
-
         if (!empty($var_output)) {
             $replacement .= $var_output;
         }
-
         if (preg_match("/http/", $addcart)) {
             //Use the image as the add to cart button
             $replacement .= '<input type="image" src="' . $addcart . '" class="wp_cart_button" alt="' . (__("Add to Cart", "wordpress-simple-paypal-shopping-cart")) . '"/>';
@@ -447,7 +394,6 @@ function print_wp_cart_button_new($content) {
             //Plain text add to cart button
             $replacement .= '<input type="submit" class="wspsc_add_cart_submit" name="wspsc_add_cart_submit" value="' . $addcart . '" />';
         }
-
         $replacement .= '<input type="hidden" name="wspsc_product" value="' . $pieces['0'] . '" /><input type="hidden" name="price" value="' . $pieces['1'] . '" />';
         $replacement .= '<input type="hidden" name="product_tmp" value="' . $pieces['0'] . '" />';
         if (sizeof($pieces) > 2) {
@@ -461,7 +407,6 @@ function print_wp_cart_button_new($content) {
             $pieces['2'] = 0;
             $replacement .= '<input type="hidden" name="shipping" value="' . $pieces['2'] . '" />';
         }
-
         $p_key = get_option('wspsc_private_key_one');
         if (empty($p_key)) {
             $p_key = uniqid('', true);
@@ -469,10 +414,8 @@ function print_wp_cart_button_new($content) {
         }
         $hash_one = md5($p_key . '|' . $pieces['1']); //Price hash
         $replacement .= '<input type="hidden" name="hash_one" value="' . $hash_one . '" />';
-
         $hash_two = md5($p_key . '|' . $pieces['2']); //Shipping hash
         $replacement .= '<input type="hidden" name="hash_two" value="' . $hash_two . '" />';
-
         $replacement .= '<input type="hidden" name="cartLink" value="' . esc_url(cart_current_page_url()) . '" />';
         $replacement .= '<input type="hidden" name="addcart" value="1" /></form>';
         $replacement .= '</div>';
@@ -480,7 +423,6 @@ function print_wp_cart_button_new($content) {
     }
     return $content;
 }
-
 function wp_cart_add_read_form_javascript() {
     $debug_marker = "<!-- WP Simple Shopping Cart plugin v" . WP_CART_VERSION . " - https://www.tipsandtricks-hq.com/wordpress-simple-paypal-shopping-cart-plugin-768/ -->";
     echo "\n${debug_marker}\n";
@@ -515,13 +457,11 @@ function wp_cart_add_read_form_javascript() {
 	//-->
 	</script>';
 }
-
 function print_wp_cart_button_for_product($name, $price, $shipping = 0, $var1 = '', $var2 = '', $var3 = '', $atts = array()) {
     $addcart = get_option('addToCartButtonName');
     if (!$addcart || ($addcart == '')) {
         $addcart = __("Add to Cart", "wordpress-simple-paypal-shopping-cart");
     }
-
     $var_output = "";
     if (!empty($var1)) {
         $var1_pieces = explode('|', $var1);
@@ -553,14 +493,12 @@ function print_wp_cart_button_for_product($name, $price, $shipping = 0, $var1 = 
         }
         $var_output .= '</select><br />';
     }
-
     $replacement = '<div class="wp_cart_button_wrapper">';
     $replacement .= '<form method="post" class="wp-cart-button-form" action="" style="display:inline" onsubmit="return ReadForm(this, true);" ' . apply_filters("wspsc_add_cart_button_form_attr", "") . '>';
     $replacement .= wp_nonce_field('wspsc_addcart', '_wpnonce', true, false);
     if (!empty($var_output)) {//Show variation
         $replacement .= '<div class="wp_cart_variation_section">' . $var_output . '</div>';
     }
-
     if (isset($atts['button_image']) && !empty($atts['button_image'])) {
         //Use the custom button image specified in the shortcode
         $replacement .= '<input type="image" src="' . $atts['button_image'] . '" class="wp_cart_button" alt="' . (__("Add to Cart", "wordpress-simple-paypal-shopping-cart")) . '"/>';
@@ -577,7 +515,6 @@ function print_wp_cart_button_for_product($name, $price, $shipping = 0, $var1 = 
             $replacement .= '<input type="submit" class="wspsc_add_cart_submit" name="wspsc_add_cart_submit" value="' . apply_filters('wspsc_add_cart_submit_button_value', $addcart, $price) . '" />';
         }
     }
-
     $replacement .= '<input type="hidden" name="wspsc_product" value="' . $name . '" />';
     $replacement .= '<input type="hidden" name="price" value="' . $price . '" />';
     $replacement .= '<input type="hidden" name="shipping" value="' . $shipping . '" />';
@@ -586,7 +523,6 @@ function print_wp_cart_button_for_product($name, $price, $shipping = 0, $var1 = 
     $replacement .= '<input type="hidden" name="product_tmp" value="' . $name . '" />';
     isset($atts['item_number']) ? $item_num = $atts['item_number'] : $item_num = '';
     $replacement .= '<input type="hidden" name="item_number" value="' . $item_num . '" />';
-
     if (isset($atts['file_url'])) {
         $file_url = $atts['file_url'];
         $file_url = base64_encode($file_url);
@@ -598,7 +534,6 @@ function print_wp_cart_button_for_product($name, $price, $shipping = 0, $var1 = 
     if (isset($atts['stamp_pdf'])) {
         $replacement .= '<input type="hidden" name="stamp_pdf" value="' . $atts['stamp_pdf'] . '" />';
     }
-
     $p_key = get_option('wspsc_private_key_one');
     if (empty($p_key)) {
         $p_key = uniqid('', true);
@@ -606,15 +541,12 @@ function print_wp_cart_button_for_product($name, $price, $shipping = 0, $var1 = 
     }
     $hash_one = md5($p_key . '|' . $price);
     $replacement .= '<input type="hidden" name="hash_one" value="' . $hash_one . '" />';
-
     $hash_two = md5($p_key . '|' . $shipping);
     $replacement .= '<input type="hidden" name="hash_two" value="' . $hash_two . '" />';
-
     $replacement .= '</form>';
     $replacement .= '</div>';
     return $replacement;
 }
-
 function cart_not_empty() {
     $count = 0;
     if (isset($_SESSION['simpleCart']) && is_array($_SESSION['simpleCart'])) {
@@ -624,7 +556,6 @@ function cart_not_empty() {
     } else
         return 0;
 }
-
 function print_payment_currency($price, $symbol, $decimal = '.') {
     $formatted_price = '';
     $formatted_price = apply_filters('wspsc_print_formatted_price', $formatted_price, $price, $symbol);
@@ -634,7 +565,6 @@ function print_payment_currency($price, $symbol, $decimal = '.') {
     $formatted_price = $symbol . number_format($price, 2, $decimal, ',');
     return $formatted_price;
 }
-
 function cart_current_page_url() {
     $pageURL = 'http';
     if (!isset($_SERVER["HTTPS"])) {
@@ -643,7 +573,6 @@ function cart_current_page_url() {
     if (!isset($_SERVER["SERVER_PORT"])) {
         $_SERVER["SERVER_PORT"] = "";
     }
-
     if ($_SERVER["HTTPS"] == "on") {
         $pageURL .= "s";
     }
@@ -655,7 +584,6 @@ function cart_current_page_url() {
     }
     return $pageURL;
 }
-
 function simple_cart_total() {
     $grand_total = 0;
     foreach ((array) $_SESSION['simpleCart'] as $item) {
@@ -665,41 +593,31 @@ function simple_cart_total() {
     $grand_total = $total + $item_total_shipping;
     return wpspsc_number_format_price($grand_total);
 }
-
 function wp_paypal_shopping_cart_load_widgets() {
     register_widget('WP_PayPal_Cart_Widget');
 }
-
 class WP_PayPal_Cart_Widget extends WP_Widget {
-
     function __construct() {
         parent::__construct('wp_paypal_shopping_cart_widgets', 'WP Paypal Shopping Cart', array('description' => 'WP Paypal Shopping Cart Widget'));
     }
-
     function form($instance) {
         // outputs the options form on admin
     }
-
     function update($new_instance, $old_instance) {
         // processes widget options to be saved
     }
-
     function widget($args, $instance) {
         // outputs the content of the widget
         extract($args);
-
         $cart_title = get_option('wp_cart_title');
         if (empty($cart_title))
             $cart_title = __("Shopping Cart", "wordpress-simple-paypal-shopping-cart");
-
         echo $before_widget;
         echo $before_title . $cart_title . $after_title;
         echo print_wp_shopping_cart();
         echo $after_widget;
     }
-
 }
-
 function wspsc_admin_side_enqueue_scripts() {
     if (isset($_GET['page']) && $_GET['page'] == 'wspsc-discounts') { //simple paypal shopping cart discount page
         wp_enqueue_style('jquery-ui-style', '//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css');
@@ -707,21 +625,16 @@ function wspsc_admin_side_enqueue_scripts() {
         wp_enqueue_script('wpspsc-admin');
     }
 }
-
 function wspsc_admin_side_styles() {
     wp_enqueue_style('wspsc-admin-style', WP_CART_URL . '/assets/wspsc-admin-styles.css', array(), WP_CART_VERSION);
 }
-
 function wspsc_front_side_enqueue_scripts() {
     wp_enqueue_style('wspsc-style', WP_CART_URL . '/wp_shopping_cart_style.css', array(), WP_CART_VERSION);
 }
-
 function wpspc_plugin_install() {
     wpspc_run_activation();
 }
-
 register_activation_hook(__FILE__, 'wpspc_plugin_install');
-
 // Add the settings link
 function wp_simple_cart_add_settings_link($links, $file) {
     if ($file == plugin_basename(__FILE__)) {
@@ -731,21 +644,25 @@ function wp_simple_cart_add_settings_link($links, $file) {
     return $links;
 }
 
+function wp_cart_custom_field_composer_javascript() {
+    //if (isset($_GET['page']) && $_GET['page'] == 'wspsc-discounts') { //simple paypal shopping cart discount page
+        //wp_enqueue_style('jquery-ui-style', '//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css');
+        wp_register_script('wpspsccfc', WP_CART_URL . '/lib/wpspsc_cfc.js', array('jquery'));
+        wp_enqueue_script('wpspsccfc');
+    //}
+}
+
 add_filter('plugin_action_links', 'wp_simple_cart_add_settings_link', 10, 2);
-
 add_action('widgets_init', 'wp_paypal_shopping_cart_load_widgets');
-
 add_action('init', 'wp_cart_init_handler');
 add_action('admin_init', 'wp_cart_admin_init_handler');
-
 add_filter('the_content', 'print_wp_cart_button_new', 11);
 add_filter('the_content', 'shopping_cart_show');
-
 if (!is_admin()) {
     add_filter('widget_text', 'do_shortcode');
 }
-
 add_action('wp_head', 'wp_cart_add_read_form_javascript');
+add_action('wp_enqueue_scripts', 'wp_cart_custom_field_composer_javascript');
 add_action('wp_enqueue_scripts', 'wspsc_front_side_enqueue_scripts');
 add_action('admin_enqueue_scripts', 'wspsc_admin_side_enqueue_scripts');
 add_action('admin_print_styles', 'wspsc_admin_side_styles');
